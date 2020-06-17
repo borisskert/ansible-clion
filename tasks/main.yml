@@ -1,2 +1,5 @@
 ---
-# tasks file for ansible-clion
+- name: Download CLion tar file
+  get_url:
+    url: "{{ clion_download_url }}"
+    dest: "{{ clion_download_file }}"

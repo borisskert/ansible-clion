@@ -1,9 +1,11 @@
 ---
-# This is an example playbook to execute Ansible tests.
-
 - name: Verify
   hosts: all
   tasks:
-  - name: Example assertion
-    assert:
-      that: true
+    - name: Should download CLion tar file
+      stat:
+        path: /tmp/CLion-2020.1.2.tar.gz
+      register: download_file
+      failed_when: not (
+        download_file.stat.exists
+        )

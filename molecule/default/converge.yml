@@ -1,7 +1,8 @@
 ---
 - name: Converge
   hosts: all
-  tasks:
-    - name: "Include ansible-clion"
-      include_role:
-        name: "ansible-clion"
+  become: true
+
+  roles:
+    - role: ansible-clion
+      clion_version: 2020.1.2

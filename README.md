@@ -1,38 +1,43 @@
-Role Name
-=========
+# ansible-clion
 
-A brief description of the role goes here.
+This ansible-role installs JetBrain's CLion
 
-Requirements
-------------
+## Tasks
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+* Download CLion tar file
 
-Role Variables
---------------
+| Variable       | Type | Mandatory? | Default | Description           |
+|----------------|------|------------|---------|-----------------------|
+| clion_version  | text | no         | `2020.1.2` | The CLion version  |
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## Usage
 
-Dependencies
-------------
+### Playbook
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+```yaml
+- hosts: test_machine
+  become: yes
 
-Example Playbook
-----------------
+  roles:
+    - role: ansible-clion
+      clion_version: 2020.1.2
+```
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+## Testing
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+Requirements:
 
-License
--------
+* [Ansible](https://docs.ansible.com/)
+* [Molecule](https://molecule.readthedocs.io/en/latest/index.html)
+* [yamllint](https://yamllint.readthedocs.io/en/stable/#)
+* [ansible-lint](https://docs.ansible.com/ansible-lint/)
+* [Docker](https://docs.docker.com/)
 
-BSD
+### Run within docker
 
-Author Information
-------------------
+```shell script
+molecule test
+```
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+I recommend to use [pyenv](https://github.com/pyenv/pyenv) for local testing.
+Within the Github Actions pipeline I use [my molecule Docker image](https://github.com/borisskert/docker-molecule).

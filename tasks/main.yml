@@ -24,3 +24,8 @@
     dest: "{{ clion_installation_dir }}"
     extra_opts:
       - '--strip-components=1'
+
+- name: Create CLiom shortcut
+  template:
+    src: jetbrains-clion.desktop.j2
+    dest: /usr/share/applications/jetbrains-clion.desktop

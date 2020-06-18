@@ -28,3 +28,11 @@
       assert:
         that:
           installation_directory_files.stdout_lines | length > 2
+
+    - name: Should create CLion shortcut icon
+      stat:
+        path: /usr/share/applications/jetbrains-clion.desktop
+      register: desktop_icon_file
+      failed_when: not (
+        desktop_icon_file.stat.exists
+        )

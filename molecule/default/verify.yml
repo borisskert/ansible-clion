@@ -9,3 +9,22 @@
       failed_when: not (
         download_file.stat.exists
         )
+
+    - name: Should create CLion installation directory
+      stat:
+        path: /opt/CLion-2020.1.2
+      register: installation_directory
+      failed_when: not (
+        installation_directory.stat.exists
+        and installation_directory.stat.isdir
+        )
+
+    - name: Determine number of extracted files
+      command: ls /opt/CLion-2020.1.2
+      register: installation_directory_files
+      changed_when: false
+
+    - name: Should extract CLion installation
+      assert:
+        that:
+          installation_directory_files.stdout_lines | length > 2

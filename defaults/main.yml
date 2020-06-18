@@ -4,3 +4,5 @@ clion_version: 2020.1.2
 clion_download_url:
   "https://download.jetbrains.com/cpp/CLion-{{ clion_version }}.tar.gz"
 clion_download_file: "/tmp/CLion-{{ clion_version }}.tar.gz"
+
+clion_installation_dir: "/opt/CLion-{{ clion_version }}"

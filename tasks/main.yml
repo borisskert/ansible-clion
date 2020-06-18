@@ -1,5 +1,26 @@
 ---
-- name: Download CLion tar file
+- name: Install needed dependancies
+  apt:
+    name:
+      - tar
+      - unzip
+    update_cache: true
+
+- name: Download tar file
   get_url:
     url: "{{ clion_download_url }}"
     dest: "{{ clion_download_file }}"
+
+- name: Create installation directory
+  file:
+    state: directory
+    mode: 0755
+    dest: "{{ clion_installation_dir }}"
+
+- name: Extract tar file
+  unarchive:
+    copy: false
+    src: "{{ clion_download_file }}"
+    dest: "{{ clion_installation_dir }}"
+    extra_opts:
+      - '--strip-components=1'

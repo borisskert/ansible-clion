@@ -14,9 +14,17 @@
     mode: 0755
   register: docker_add_user_script
 
+- name: Setup file paths
+  set_fact:
+    compiled_libpty:
+      /opt/github/JetBrains/pty4j/os/linux/aarch64/libpty.so
+    libpty_destination:
+      "{{ clion_installation_dir }}/lib/pty4j-native/linux/x86_64/libpty.so"
+
 - name: Determine if pty4j has already been compiled
   stat:
-    path: /opt/github/JetBrains/pty4j/os/linux/aarch64/libpty.so
+    path: "{{ compiled_libpty }}"
+    checksum_algorithm: sha256
   register: compiled_pty4j
 
 - name: Compile pty4j for aarch64
@@ -25,8 +33,20 @@
     chdir: /opt/github/JetBrains/pty4j/native
   when: not compiled_pty4j.stat.exists
 
+- name: Check pty4j destination file
+  stat:
+    path: "{{ libpty_destination }}"
+    checksum_algorithm: sha256
+  register: pty4j_destination
+
+- name: Estimate if pty4j needs to be compiled
+  set_fact:
+    compile_pty4j: not compiled_pty4j.stat.exists
+      or compiled_pty4j.stat.checksum != pty4j_destination.stat.checksum
+
 - name: Replace pty4j module
   copy:
-    src: /opt/github/JetBrains/pty4j/os/linux/aarch64/libpty.so
-    dest: "{{ clion_installation_dir }}/lib/pty4j-native/linux/x86_64/libpty.so"
+    src: "{{ compiled_libpty }}"
+    dest: "{{ libpty_destination }}"
     remote_src: true
+  when: compile_pty4j | bool

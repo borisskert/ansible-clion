@@ -6,10 +6,28 @@
       - unzip
     update_cache: true
 
+- name: Examine CLion installation directory
+  find:
+    paths: "{{ clion_installation_dir }}"
+    file_type: directory
+    patterns: '*'
+  register: clion_installation
+
+- debug:
+    var: clion_installation
+
+- name: Determine if CLion is installed
+  set_fact:
+    clion_is_installed: "{{ clion_installation.matched | int > 0 | bool }}"
+
+- debug:
+    var: clion_is_installed | bool
+
 - name: Download tar file
   get_url:
     url: "{{ clion_download_url }}"
     dest: "{{ clion_download_file }}"
+  when: not clion_is_installed | bool
 
 - name: Create installation directory
   file:
@@ -24,8 +42,9 @@
     dest: "{{ clion_installation_dir }}"
     extra_opts:
       - '--strip-components=1'
+  when: not clion_is_installed | bool
 
-- name: Create CLiom shortcut
+- name: Create CLion shortcut
   template:
     src: jetbrains-clion.desktop.j2
     dest: /usr/share/applications/jetbrains-clion.desktop

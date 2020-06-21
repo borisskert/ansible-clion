@@ -3,7 +3,7 @@
   git:
     repo: https://github.com/JetBrains/pty4j.git
     dest: /opt/github/JetBrains/pty4j
-    version: master
+    version: 1ae19e6  # Version 0.9.6
 
 - name: Create Makefile for aarch64
   copy:
@@ -32,6 +32,7 @@
   args:
     chdir: /opt/github/JetBrains/pty4j/native
   when: not compiled_pty4j.stat.exists
+  register: pty4j_compiled
 
 - name: Check pty4j destination file
   stat:
@@ -39,14 +40,17 @@
     checksum_algorithm: sha256
   register: pty4j_destination
 
-- name: Estimate if pty4j needs to be compiled
+- name: Estimate if pty4j needs to be copied
   set_fact:
-    compile_pty4j: not compiled_pty4j.stat.exists
+    copy_pty4j: "{{
+      pty4j_compiled.changed
       or compiled_pty4j.stat.checksum != pty4j_destination.stat.checksum
+      }}"
 
 - name: Replace pty4j module
   copy:
     src: "{{ compiled_libpty }}"
     dest: "{{ libpty_destination }}"
     remote_src: true
-  when: compile_pty4j | bool
+    mode: 0755
+  when: copy_pty4j | bool

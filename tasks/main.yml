@@ -13,15 +13,9 @@
     patterns: '*'
   register: clion_installation
 
-- debug:
-    var: clion_installation
-
 - name: Determine if CLion is installed
   set_fact:
     clion_is_installed: "{{ clion_installation.matched | int > 0 | bool }}"
-
-- debug:
-    var: clion_is_installed | bool
 
 - name: Download tar file
   get_url:
@@ -51,4 +45,8 @@
 
 - name: Compile pty4j for aarch64
   include: compile-pty4j-for-aarch64.yml
+  when: ansible_architecture == 'aarch64'
+
+- name: Compile file-watcher for aarch64
+  include: compile-file-watcher-for-aarch64.yml
   when: ansible_architecture == 'aarch64'

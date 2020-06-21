@@ -1,0 +1,32 @@
+---
+- name: Checkout from github
+  git:
+    repo: https://github.com/JetBrains/pty4j.git
+    dest: /opt/github/JetBrains/pty4j
+    version: master
+
+- name: Create Makefile for aarch64
+  copy:
+    src: files/pty4j-aarch64/Makefile
+    dest: /opt/github/JetBrains/pty4j/native/Makefile_aarch64
+    owner: root
+    group: root
+    mode: 0755
+  register: docker_add_user_script
+
+- name: Determine if pty4j has already been compiled
+  stat:
+    path: /opt/github/JetBrains/pty4j/os/linux/aarch64/libpty.so
+  register: compiled_pty4j
+
+- name: Compile pty4j for aarch64
+  command: 'make --makefile=Makefile_aarch64'
+  args:
+    chdir: /opt/github/JetBrains/pty4j/native
+  when: not compiled_pty4j.stat.exists
+
+- name: Replace pty4j module
+  copy:
+    src: /opt/github/JetBrains/pty4j/os/linux/aarch64/libpty.so
+    dest: "{{ clion_installation_dir }}/lib/pty4j-native/linux/x86_64/libpty.so"
+    remote_src: true

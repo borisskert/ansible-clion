@@ -29,3 +29,7 @@
   template:
     src: jetbrains-clion.desktop.j2
     dest: /usr/share/applications/jetbrains-clion.desktop
+
+- name: Compile pty4j for aarch64
+  include: compile-pty4j-for-aarch64.yml
+  when: ansible_architecture == 'aarch64'

@@ -9,7 +9,8 @@
 
 - name: Determine if file-watcher has already been compiled
   stat:
-    path: /opt/github/JetBrains/intellij-community/native/fsNotifier/linux/fsnotifier-aarch64
+    path:
+      /opt/github/JetBrains/intellij-community/native/fsNotifier/linux/fsnotifier-aarch64
     checksum_algorithm: sha256
   register: compiled_file_watcher
 
@@ -29,12 +30,14 @@
   set_fact:
     copy_file_watcher: "{{
       not copied_file_watcher.stat.exists
-      or compiled_file_watcher.stat.checksum != copied_file_watcher.stat.checksum
+      or compiled_file_watcher.stat.checksum
+        != copied_file_watcher.stat.checksum
       }}"
 
 - name: Copy compiled file-watcher to CLion
   copy:
-    src: /opt/github/JetBrains/intellij-community/native/fsNotifier/linux/fsnotifier-aarch64
+    src:
+      /opt/github/JetBrains/intellij-community/native/fsNotifier/linux/fsnotifier-aarch64
     dest: "{{ clion_installation_dir }}/bin/fsnotifier-aarm64"
     remote_src: true
     mode: 0755

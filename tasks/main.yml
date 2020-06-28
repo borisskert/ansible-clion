@@ -43,10 +43,21 @@
     src: jetbrains-clion.desktop.j2
     dest: /usr/share/applications/jetbrains-clion.desktop
 
-- name: Compile pty4j for aarch64
-  include: compile-pty4j-for-aarch64.yml
+- name: Compile pty4j for arm architecture
+  include: compile-pty4j-for-aarch.yml
   when: ansible_architecture == 'aarch64'
+    or ansible_architecture == 'armv7l'
 
-- name: Compile file-watcher for aarch64
-  include: compile-file-watcher-for-aarch64.yml
+- name: Compile file-watcher for arm architecture
+  include: compile-file-watcher-for-aarch.yml
   when: ansible_architecture == 'aarch64'
+    or ansible_architecture == 'armv7l'
+
+- name: Install developer tools
+  package:
+    name:
+      - gdb
+      - make
+      - gcc
+      - cmake
+    state: present

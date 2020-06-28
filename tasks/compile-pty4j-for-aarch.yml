@@ -5,21 +5,32 @@
     dest: /opt/github/JetBrains/pty4j
     version: 1ae19e6  # Version 0.9.6
 
-- name: Create Makefile for aarch64
-  copy:
-    src: files/pty4j-aarch64/Makefile
-    dest: /opt/github/JetBrains/pty4j/native/Makefile_aarch64
+- name: Create Makefile for aarch
+  template:
+    src: templates/pty4j-aarch/Makefile
+    dest: /opt/github/JetBrains/pty4j/native/Makefile_aarch
     owner: root
     group: root
     mode: 0755
   register: docker_add_user_script
 
-- name: Setup file paths
+- name: Setup target path for aarch64
   set_fact:
-    compiled_libpty:
-      /opt/github/JetBrains/pty4j/os/linux/aarch64/libpty.so
     libpty_destination:
       "{{ clion_installation_dir }}/lib/pty4j-native/linux/x86_64/libpty.so"
+  when: ansible_architecture == 'aarch64'
+
+- name: Setup target path for armv7l
+  set_fact:
+    libpty_destination:
+      "{{ clion_installation_dir }}/lib/pty4j-native/linux/x86/libpty.so"
+  when: ansible_architecture == 'armv7l'
+
+- name: Setup compiled lib path
+  set_fact:
+    compiled_libpty:
+      "/opt/github/JetBrains/pty4j/os/linux/\
+      {{ ansible_architecture }}/libpty.so"
 
 - name: Determine if pty4j has already been compiled
   stat:
@@ -27,8 +38,8 @@
     checksum_algorithm: sha256
   register: compiled_pty4j
 
-- name: Compile pty4j for aarch64
-  command: 'make --makefile=Makefile_aarch64'
+- name: Compile pty4j for aarch
+  command: 'make --makefile=Makefile_aarch'
   args:
     chdir: /opt/github/JetBrains/pty4j/native
   when: not compiled_pty4j.stat.exists

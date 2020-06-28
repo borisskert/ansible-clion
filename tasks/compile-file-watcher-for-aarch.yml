@@ -10,11 +10,12 @@
 - name: Determine if file-watcher has already been compiled
   stat:
     path:
-      /opt/github/JetBrains/intellij-community/native/fsNotifier/linux/fsnotifier-aarch64
+      "/opt/github/JetBrains/intellij-community/native/fsNotifier/\
+      linux/fsnotifier-{{ ansible_architecture }}"
     checksum_algorithm: sha256
   register: compiled_file_watcher
 
-- name: Compile file-watcher for aarch64
+- name: Compile file-watcher for aarch
   command: './make.sh'
   args:
     chdir: /opt/github/JetBrains/intellij-community/native/fsNotifier/linux
@@ -22,7 +23,8 @@
 
 - name: Determine if file-watcher has already been copied
   stat:
-    path: "{{ clion_installation_dir }}/bin/fsnotifier-aarm64"
+    path:
+      "{{ clion_installation_dir }}/bin/fsnotifier-{{ ansible_architecture }}"
     checksum_algorithm: sha256
   register: copied_file_watcher
 
@@ -37,8 +39,10 @@
 - name: Copy compiled file-watcher to CLion
   copy:
     src:
-      /opt/github/JetBrains/intellij-community/native/fsNotifier/linux/fsnotifier-aarch64
-    dest: "{{ clion_installation_dir }}/bin/fsnotifier-aarm64"
+      "/opt/github/JetBrains/intellij-community/native/fsNotifier/\
+      linux/fsnotifier-{{ ansible_architecture }}"
+    dest:
+      "{{ clion_installation_dir }}/bin/fsnotifier-{{ ansible_architecture }}"
     remote_src: true
     mode: 0755
   when: copy_file_watcher
@@ -47,4 +51,5 @@
   lineinfile:
     path: "{{ clion_installation_dir }}/bin/idea.properties"
     regexp: '^idea.filewatcher.executable.path'
-    line: 'idea.filewatcher.executable.path = fsnotifier-aarm64'
+    line:
+      "idea.filewatcher.executable.path = fsnotifier-{{ ansible_architecture }}"

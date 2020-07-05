@@ -9,13 +9,12 @@ This ansible-role installs JetBrains CLion
 * On arm architecture: Compile pty4j
 * On arm architecture: Compile file-watcher
 
-## Tasks
-
-* Download CLion tar file
+## Role parameters
 
 | Variable       | Type | Mandatory? | Default | Description           |
 |----------------|------|------------|---------|-----------------------|
 | clion_version  | text | no         | `2020.1.2` | The CLion version  |
+| clion_openjdk_version | text | no  | `11`       | The used openjdk version which will be installed |
 
 ## Usage
 

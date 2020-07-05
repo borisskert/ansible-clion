@@ -53,6 +53,12 @@
   when: ansible_architecture == 'aarch64'
     or ansible_architecture == 'armv7l'
 
+- name: Install runtime dependency
+  package:
+    name:
+      - "openjdk-{{ clion_openjdk_version }}-jdk"
+    state: present
+
 - name: Install developer tools
   package:
     name:

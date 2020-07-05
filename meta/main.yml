@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: borisskert
-  description: Installation role for Resharper CLion
+  description: Installation role for JetBrains CLion
   min_ansible_version: 2.9
   license: MIT
   platforms:

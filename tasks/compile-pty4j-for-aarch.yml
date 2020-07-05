@@ -1,4 +1,10 @@
 ---
+- name: Install build tools needed to compile
+  package:
+    name:
+      - make
+      - gcc
+
 - name: Checkout from github
   git:
     repo: https://github.com/JetBrains/pty4j.git

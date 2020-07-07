@@ -12,7 +12,7 @@
 
     - name: Should create CLion installation directory
       stat:
-        path: /opt/CLion-2020.1.2
+        path: /usr/local/lib/clion-2020.1.2
       register: installation_directory
       failed_when: not (
         installation_directory.stat.exists
@@ -20,7 +20,7 @@
         )
 
     - name: Determine number of extracted files
-      command: ls /opt/CLion-2020.1.2
+      command: ls /usr/local/lib/clion-2020.1.2
       register: installation_directory_files
       changed_when: false
 

@@ -1,20 +1,26 @@
 ---
+- name: Setup some facts
+  set_fact:
+    pty4j_src_directory: /usr/local/src/pty4j
+
 - name: Install build tools needed to compile
   package:
     name:
       - make
       - gcc
+      - git
 
 - name: Checkout from github
   git:
     repo: https://github.com/JetBrains/pty4j.git
-    dest: /opt/github/JetBrains/pty4j
+    dest: "{{ pty4j_src_directory }}"
     version: 1ae19e6  # Version 0.9.6
+    force: true
 
 - name: Create Makefile for aarch
   template:
     src: templates/pty4j-aarch/Makefile
-    dest: /opt/github/JetBrains/pty4j/native/Makefile_aarch
+    dest: "{{ pty4j_src_directory }}/native/Makefile_aarch"
     owner: root
     group: root
     mode: 0755
@@ -35,7 +41,7 @@
 - name: Setup compiled lib path
   set_fact:
     compiled_libpty:
-      "/opt/github/JetBrains/pty4j/os/linux/\
+      "{{ pty4j_src_directory }}/os/linux/\
       {{ ansible_architecture }}/libpty.so"
 
 - name: Determine if pty4j has already been compiled
@@ -47,7 +53,7 @@
 - name: Compile pty4j for aarch
   command: 'make --makefile=Makefile_aarch'
   args:
-    chdir: /opt/github/JetBrains/pty4j/native
+    chdir: "{{ pty4j_src_directory }}/native"
   when: not compiled_pty4j.stat.exists
   register: pty4j_compiled
 

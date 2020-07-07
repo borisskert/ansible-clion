@@ -1,8 +1,13 @@
 ---
+- name: Setup some facts
+  set_fact:
+    intellij_community_src_directory:
+      /usr/local/src/intellij-community
+
 - name: Checkout from github
   git:
     repo: https://github.com/JetBrains/intellij-community.git
-    dest: /opt/github/JetBrains/intellij-community
+    dest: "{{ intellij_community_src_directory }}"
     version: master
     depth: 1
     update: false
@@ -10,7 +15,7 @@
 - name: Determine if file-watcher has already been compiled
   stat:
     path:
-      "/opt/github/JetBrains/intellij-community/native/fsNotifier/\
+      "{{ intellij_community_src_directory }}/native/fsNotifier/\
       linux/fsnotifier-{{ ansible_architecture }}"
     checksum_algorithm: sha256
   register: compiled_file_watcher
@@ -18,13 +23,14 @@
 - name: Compile file-watcher for aarch
   command: './make.sh'
   args:
-    chdir: /opt/github/JetBrains/intellij-community/native/fsNotifier/linux
+    chdir:
+      "{{ intellij_community_src_directory }}/\
+      native/fsNotifier/linux"
   when: not compiled_file_watcher.stat.exists
 
 - name: Determine if file-watcher has already been copied
   stat:
-    path:
-      "{{ clion_installation_dir }}/bin/fsnotifier-{{ ansible_architecture }}"
+    path: /usr/local/bin/fsnotifier
     checksum_algorithm: sha256
   register: copied_file_watcher
 
@@ -39,10 +45,9 @@
 - name: Copy compiled file-watcher to CLion
   copy:
     src:
-      "/opt/github/JetBrains/intellij-community/native/fsNotifier/\
-      linux/fsnotifier-{{ ansible_architecture }}"
-    dest:
-      "{{ clion_installation_dir }}/bin/fsnotifier-{{ ansible_architecture }}"
+      "{{ intellij_community_src_directory }}/\
+      native/fsNotifier/linux/fsnotifier-{{ ansible_architecture }}"
+    dest: /usr/local/bin/fsnotifier
     remote_src: true
     mode: 0755
   when: copy_file_watcher
@@ -52,4 +57,4 @@
     path: "{{ clion_installation_dir }}/bin/idea.properties"
     regexp: '^idea.filewatcher.executable.path'
     line:
-      "idea.filewatcher.executable.path = fsnotifier-{{ ansible_architecture }}"
+      "idea.filewatcher.executable.path = /usr/local/bin/fsnotifier"
